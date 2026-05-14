@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.env
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Claude Code local settings
+.claude/
+
+# Raw CAASPP source data (regenerable from CDE; preprocessed into school_scores/*.parquet)
+school_scores/*.txt
+school_scores/*.zip
+school_scores/*.mdb
+school_scores/*.png
+
+# Full SEDA parquets (kept locally as *_full.parquet backups; deployed app uses Burlingame-trimmed versions)
+seda_app/data/*_full.parquet
