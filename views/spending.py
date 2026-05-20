@@ -15,11 +15,12 @@ from shared.theme import LINCOLN_COLOR, PEER_COLOR, GRAY, WARN, DANGER, configur
 
 LATEST = 2024
 
-# CA statewide ESSA per-pupil expenditure, 2023-24 — enrollment-weighted across all
-# ~9,200 schools with valid data (computed from the same CDE ESSA PPE workbook, after
-# dropping data-entry outliers). All-grades; elementaries typically run lower, so this
-# is a rough benchmark, not an elementary-specific figure.
-CA_AVG_PPE = 19200
+# CA statewide ESSA per-pupil expenditure for ELEMENTARY (K-6) schools, 2023-24 —
+# enrollment-weighted across ~4,600 GS_K6 schools (2.2M students), computed from the
+# CDE ESSA PPE workbook joined to CDE staffing grade-spans, after dropping data-entry
+# outliers. Apples-to-apples with the K-6 schools shown here. (The all-grades figure is
+# nearly identical at ~$19,200 — CA elementaries do not spend less than secondary.)
+CA_AVG_PPE = 19450
 
 
 def _ordinal(n):
@@ -113,7 +114,7 @@ with tab_compare:
     ca_rule = alt.Chart(ref).mark_rule(color=DANGER, strokeDash=[5, 4], strokeWidth=2).encode(
         x='x:Q', tooltip=alt.value(f'CA state average (2023-24): ${CA_AVG_PPE:,}'))
     ca_text = alt.Chart(ref).mark_text(color=DANGER, align='center', baseline='bottom',
-        dy=-4, fontSize=10, fontWeight='bold', text=f'CA avg ${CA_AVG_PPE:,}').encode(
+        dy=-4, fontSize=10, fontWeight='bold', text=f'CA elem avg ${CA_AVG_PPE:,}').encode(
         x='x:Q', y=alt.value(0))
     chart = (bars + labels + ca_rule + ca_text).properties(
         width=620, height=300,
@@ -127,10 +128,11 @@ with tab_compare:
         st.markdown(
             f'- **Blue = Lincoln.** Spending ranges from **${lo["total_ppe"]:,.0f}** ({lo["School"]}) '
             f'to **${hi["total_ppe"]:,.0f}** ({hi["School"]}) per pupil.\n'
-            f'- **Red dashed line = CA statewide average (~${CA_AVG_PPE:,}, 2023-24).** Every '
-            f'Burlingame elementary spends *below* it — largely because California routes extra '
-            f'money (LCFF supplemental/concentration + federal Title I) to higher-poverty students, '
-            f'and Burlingame is low-poverty. The state figure is also all-grades (secondary spends more).\n'
+            f'- **Red dashed line = CA average for elementary (K-6) schools (~${CA_AVG_PPE:,}, '
+            f'2023-24).** Every Burlingame elementary spends *below* it — because California routes '
+            f'extra money (LCFF supplemental/concentration + federal Title I) to higher-poverty '
+            f'students, and Burlingame is low-poverty. (This is an elementary-only benchmark, so '
+            f'it is apples-to-apples; CA elementaries do not spend less than secondary schools.)\n'
             f'- Smaller schools often show higher per-pupil spending — fixed costs '
             f'(a principal, an office) spread over fewer students.'
         )
@@ -213,7 +215,7 @@ with tab_trend:
     ca_rule = alt.Chart(ref).mark_rule(color=DANGER, strokeDash=[5, 4], strokeWidth=2).encode(
         y='y:Q', tooltip=alt.value(f'CA state average (2023-24): ${CA_AVG_PPE:,}'))
     ca_text = alt.Chart(ref).mark_text(color=DANGER, align='left', baseline='bottom',
-        dx=5, dy=-3, fontSize=10, fontWeight='bold', text=f'CA avg ${CA_AVG_PPE:,} (2023-24)').encode(
+        dx=5, dy=-3, fontSize=10, fontWeight='bold', text=f'CA elem avg ${CA_AVG_PPE:,} (2023-24)').encode(
         x=alt.value(0), y='y:Q')
     chart = (lines + points + labels + ca_rule + ca_text).properties(
         width=720, height=400,
