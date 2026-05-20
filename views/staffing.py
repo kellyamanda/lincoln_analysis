@@ -10,10 +10,14 @@ import altair as alt
 import streamlit as st
 
 from shared import data as D
-from shared.theme import LINCOLN_COLOR, PEER_COLOR, GRAY, configure
+from shared.theme import LINCOLN_COLOR, PEER_COLOR, GRAY, WARN, configure
 
 ELEM_SPAN = 'GS_K6'
 LATEST = 2025
+
+# CA statewide students per teacher FTE, 2024-25 (CDE Certificated Staff Reports /
+# DataQuest). All-grades; CDE does not publish an elementary-only cut. NOT class size.
+CA_STATE_RATIO = 20.8
 
 
 def _ordinal(n):
@@ -127,7 +131,16 @@ with tab_compare:
         x=f'{col}:Q', y=alt.Y('School:N', sort=plot['School'].tolist()),
         text=alt.Text(f'{col}:Q', format=fmt),
     )
-    chart = (bars + labels).properties(
+    layers = [bars, labels]
+    if metric == 'Students per teacher':
+        ref = pd.DataFrame({'x': [CA_STATE_RATIO]})
+        layers.append(alt.Chart(ref).mark_rule(color=WARN, strokeDash=[5, 4], strokeWidth=2).encode(
+            x='x:Q', tooltip=alt.value(f'CA state average: {CA_STATE_RATIO}')))
+        layers.append(alt.Chart(ref).mark_text(
+            color=WARN, align='center', baseline='bottom', dy=-4, fontSize=10,
+            text=f'CA avg {CA_STATE_RATIO}').encode(
+            x='x:Q', y=alt.value(0)))
+    chart = alt.layer(*layers).properties(
         width=620, height=300,
         title=alt.TitleParams(f'{metric} by school — {LATEST-1}-{str(LATEST)[2:]}', dy=-4),
         padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 40},
@@ -138,6 +151,9 @@ with tab_compare:
         st.markdown(
             f'- **Blue = Lincoln.** Lower student/teacher ratio means more teaching staff '
             f'relative to enrollment.\n'
+            f'- **Orange dashed line = California state average ({CA_STATE_RATIO} students per '
+            f'teacher FTE, 2024-25).** CA runs among the highest (least favorable) ratios in the '
+            f'US; bars to the left of the line beat the state norm.\n'
             f'- Ratios here ({latest["stu_tch_ratio"].min():.0f}–{latest["stu_tch_ratio"].max():.0f}) '
             f'sit below typical homeroom class sizes because every teacher FTE — including '
             f'specialists and intervention staff — is counted.\n'
@@ -188,7 +204,16 @@ with tab_trend:
         color=alt.Color('is_lincoln:N',
             scale=alt.Scale(domain=[True, False], range=[LINCOLN_COLOR, GRAY]), legend=None),
     )
-    chart_t = (lines + points + labels_t).properties(
+    t_layers = [lines, points, labels_t]
+    if metric_t == 'Students per teacher':
+        ref = pd.DataFrame({'y': [CA_STATE_RATIO]})
+        t_layers.append(alt.Chart(ref).mark_rule(color=WARN, strokeDash=[5, 4], strokeWidth=2).encode(
+            y='y:Q', tooltip=alt.value(f'CA state average: {CA_STATE_RATIO}')))
+        t_layers.append(alt.Chart(ref).mark_text(
+            color=WARN, align='left', baseline='bottom', dx=5, dy=-3, fontSize=10,
+            text=f'CA avg {CA_STATE_RATIO}').encode(
+            x=alt.value(0), y='y:Q'))
+    chart_t = alt.layer(*t_layers).properties(
         width=720, height=380,
         title=alt.TitleParams(f'{metric_t}, {elem["school_year_end"].min()}–{LATEST}', dy=-4),
         padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 70},
