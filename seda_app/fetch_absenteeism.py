@@ -114,6 +114,7 @@ for year_end, url in FILES.items():
 
     out = pd.DataFrame({
         "school_year_end": year_end,
+        "level": "school",
         "school_code": sc.values,
         "school_name": sc.map(ELEMENTARIES).values,
         "category_code": cat.values,
@@ -123,8 +124,26 @@ for year_end, url in FILES.items():
         "chronic_count": pd.to_numeric(burl[col("chronicabsenteeismcount")], errors="coerce").values,
         "chronic_rate": pd.to_numeric(burl[col("chronicabsenteeismrate")], errors="coerce").values,
     })
-    print(f"  {year_end}: {len(out)} rows ({out['school_code'].nunique()} schools)")
     frames.append(out)
+
+    # Statewide total (aggregate level T, category TA) — for the CA reference line.
+    st_mask = (level == "T") & (category == "TA")
+    st = df[st_mask]
+    if len(st):
+        state_row = pd.DataFrame({
+            "school_year_end": [year_end],
+            "level": ["state"],
+            "school_code": ["CA"],
+            "school_name": ["California"],
+            "category_code": ["TA"],
+            "subgroup": ["All Students"],
+            "category_type": ["Total"],
+            "eligible_enrollment": [pd.to_numeric(st[col("chronicabsenteeismeligible")], errors="coerce").iloc[0]],
+            "chronic_count": [pd.to_numeric(st[col("chronicabsenteeismcount")], errors="coerce").iloc[0]],
+            "chronic_rate": [pd.to_numeric(st[col("chronicabsenteeismrate")], errors="coerce").iloc[0]],
+        })
+        frames.append(state_row)
+    print(f"  {year_end}: {len(out)} school rows ({out['school_code'].nunique()} schools) + state")
 
 result = pd.concat(frames, ignore_index=True).sort_values(
     ["school_year_end", "school_name", "category_type", "subgroup"])

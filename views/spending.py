@@ -11,9 +11,15 @@ import altair as alt
 import streamlit as st
 
 from shared import data as D
-from shared.theme import LINCOLN_COLOR, PEER_COLOR, GRAY, WARN, configure
+from shared.theme import LINCOLN_COLOR, PEER_COLOR, GRAY, WARN, DANGER, configure
 
 LATEST = 2024
+
+# CA statewide ESSA per-pupil expenditure, 2023-24 — enrollment-weighted across all
+# ~9,200 schools with valid data (computed from the same CDE ESSA PPE workbook, after
+# dropping data-entry outliers). All-grades; elementaries typically run lower, so this
+# is a rough benchmark, not an elementary-specific figure.
+CA_AVG_PPE = 19200
 
 
 def _ordinal(n):
@@ -103,7 +109,13 @@ with tab_compare:
         x='total_ppe:Q', y=alt.Y('School:N', sort=plot['School'].tolist()),
         text=alt.Text('total_ppe:Q', format='$,.0f'),
     )
-    chart = (bars + labels).properties(
+    ref = pd.DataFrame({'x': [CA_AVG_PPE]})
+    ca_rule = alt.Chart(ref).mark_rule(color=DANGER, strokeDash=[5, 4], strokeWidth=2).encode(
+        x='x:Q', tooltip=alt.value(f'CA state average (2023-24): ${CA_AVG_PPE:,}'))
+    ca_text = alt.Chart(ref).mark_text(color=DANGER, align='center', baseline='bottom',
+        dy=-4, fontSize=10, fontWeight='bold', text=f'CA avg ${CA_AVG_PPE:,}').encode(
+        x='x:Q', y=alt.value(0))
+    chart = (bars + labels + ca_rule + ca_text).properties(
         width=620, height=300,
         title=alt.TitleParams(f'Total per-pupil spending — {LATEST-1}-{str(LATEST)[2:]}', dy=-4),
         padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 70},
@@ -115,10 +127,12 @@ with tab_compare:
         st.markdown(
             f'- **Blue = Lincoln.** Spending ranges from **${lo["total_ppe"]:,.0f}** ({lo["School"]}) '
             f'to **${hi["total_ppe"]:,.0f}** ({hi["School"]}) per pupil.\n'
+            f'- **Red dashed line = CA statewide average (~${CA_AVG_PPE:,}, 2023-24).** Every '
+            f'Burlingame elementary spends *below* it — largely because California routes extra '
+            f'money (LCFF supplemental/concentration + federal Title I) to higher-poverty students, '
+            f'and Burlingame is low-poverty. The state figure is also all-grades (secondary spends more).\n'
             f'- Smaller schools often show higher per-pupil spending — fixed costs '
-            f'(a principal, an office) spread over fewer students.\n'
-            f'- Schools with more federal dollars are typically higher-poverty (Title I) sites, '
-            f'not better-resourced overall.'
+            f'(a principal, an office) spread over fewer students.'
         )
 
 
@@ -195,7 +209,13 @@ with tab_trend:
         color=alt.Color('is_lincoln:N', scale=alt.Scale(domain=[True, False],
                         range=[LINCOLN_COLOR, GRAY]), legend=None),
     )
-    chart = (lines + points + labels).properties(
+    ref = pd.DataFrame({'y': [CA_AVG_PPE]})
+    ca_rule = alt.Chart(ref).mark_rule(color=DANGER, strokeDash=[5, 4], strokeWidth=2).encode(
+        y='y:Q', tooltip=alt.value(f'CA state average (2023-24): ${CA_AVG_PPE:,}'))
+    ca_text = alt.Chart(ref).mark_text(color=DANGER, align='left', baseline='bottom',
+        dx=5, dy=-3, fontSize=10, fontWeight='bold', text=f'CA avg ${CA_AVG_PPE:,} (2023-24)').encode(
+        x=alt.value(0), y='y:Q')
+    chart = (lines + points + labels + ca_rule + ca_text).properties(
         width=720, height=400,
         title=alt.TitleParams('Total per-pupil spending by school', dy=-4),
         padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 80},

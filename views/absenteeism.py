@@ -9,7 +9,7 @@ import altair as alt
 import streamlit as st
 
 from shared import data as D
-from shared.theme import LINCOLN_COLOR, GRAY, WARN, configure
+from shared.theme import LINCOLN_COLOR, GRAY, WARN, DANGER, configure
 
 LATEST = 2025
 COVID_YEAR = 2021  # distance-learning year — flagged, not comparable
@@ -40,10 +40,13 @@ abs_df = abs_df.copy()
 abs_df['is_lincoln'] = abs_df['school_code'] == D.LINCOLN_SCHOOL_CODE
 abs_df['School'] = abs_df['school_name']
 
-total = abs_df[abs_df['category_code'] == 'TA'].copy()
+total = abs_df[(abs_df['category_code'] == 'TA') & (abs_df['level'] == 'school')].copy()
+state = abs_df[abs_df['level'] == 'state'].copy()  # CA statewide reference, per year
 latest_total = total[total['school_year_end'] == LATEST].sort_values('chronic_rate')
 lincoln_now = latest_total[latest_total['is_lincoln']]
 lincoln_now = lincoln_now.iloc[0] if not lincoln_now.empty else None
+state_latest = state[state['school_year_end'] == LATEST]['chronic_rate']
+state_latest = float(state_latest.iloc[0]) if not state_latest.empty else None
 
 
 # ── Lincoln headline cards ────────────────────────────────────────────────────
@@ -118,16 +121,36 @@ with tab_trend:
         tooltip=[alt.Tooltip('school_year_end:O', title='Year'),
                  alt.Tooltip('chronic_rate:Q', title='Elem avg %', format='.1f')],
     )
+
+    # CA statewide reference line (per year, distinct red dashed).
+    ca_plot = state.dropna(subset=['chronic_rate']).copy()
+    if hide_covid:
+        ca_plot = ca_plot[ca_plot['school_year_end'] != COVID_YEAR]
+    ca_line = alt.Chart(ca_plot).mark_line(strokeDash=[2, 2], color=DANGER, strokeWidth=2).encode(
+        x='school_year_end:O', y='chronic_rate:Q',
+        tooltip=[alt.Tooltip('school_year_end:O', title='Year'),
+                 alt.Tooltip('chronic_rate:Q', title='CA state %', format='.1f')],
+    )
+
     last = plot[plot['school_year_end'] == plot['school_year_end'].max()]
     labels = alt.Chart(last).mark_text(align='left', dx=6, fontSize=10).encode(
         x='school_year_end:O', y='chronic_rate:Q', text='School:N',
         color=alt.Color('is_lincoln:N', scale=alt.Scale(domain=[True, False],
                         range=[LINCOLN_COLOR, GRAY]), legend=None),
     )
-    chart = (avg_line + lines + points + labels).properties(
+    # Direct labels for the two reference lines at the rightmost year.
+    ref_labels = pd.concat([
+        dist_avg[dist_avg['school_year_end'] == dist_avg['school_year_end'].max()].assign(lbl='Elementary avg', c=WARN),
+        ca_plot[ca_plot['school_year_end'] == ca_plot['school_year_end'].max()].assign(lbl='California', c=DANGER),
+    ], ignore_index=True)
+    ref_text = alt.Chart(ref_labels).mark_text(align='left', dx=6, fontSize=10, fontWeight='bold').encode(
+        x='school_year_end:O', y='chronic_rate:Q', text='lbl:N',
+        color=alt.Color('c:N', scale=None),
+    )
+    chart = (avg_line + ca_line + lines + points + labels + ref_text).properties(
         width=720, height=400,
         title=alt.TitleParams('Chronic absenteeism rate by school', dy=-4),
-        padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 80},
+        padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 90},
     )
     st.altair_chart(configure(chart))
 
@@ -144,6 +167,12 @@ with tab_trend:
                 f"{peak_row['chronic_rate']:.1f}% in {int(peak_row['school_year_end'])}, and is back to "
                 f"{now_rate.iloc[0]:.1f}% in {LATEST-1}-{str(LATEST)[2:]} — essentially at its pre-pandemic baseline."
             )
+        if state_latest is not None and not now_rate.empty:
+            lines_md.append(
+                f"- **Red dotted line = California statewide.** The state hit ~30% in 2021-22 and "
+                f"is still ~{state_latest:.0f}% in {LATEST-1}-{str(LATEST)[2:]} — Lincoln "
+                f"({now_rate.iloc[0]:.1f}%) runs far below the state and never spiked nearly as high."
+            )
         lines_md.append(
             '- **Orange dashed line** = average across the Burlingame elementaries. '
             'Chronic absenteeism spiked district-wide (and statewide) after schools reopened in 2021-22.'
@@ -156,17 +185,29 @@ with tab_trend:
 
 
 with tab_compare:
-    plot = latest_total.dropna(subset=['chronic_rate']).sort_values('chronic_rate')
+    plot = latest_total.dropna(subset=['chronic_rate']).copy()
+    plot['kind'] = plot['is_lincoln'].map({True: 'Lincoln', False: 'Peer'})
+    if state_latest is not None:
+        plot = pd.concat([plot, pd.DataFrame([{
+            'School': 'California (state)', 'chronic_rate': state_latest,
+            'chronic_count': float('nan'), 'eligible_enrollment': float('nan'),
+            'is_lincoln': False, 'kind': 'California',
+        }])], ignore_index=True)
+    plot = plot.sort_values('chronic_rate')
+    order = plot['School'].tolist()
+    kind_colors = {'Lincoln': LINCOLN_COLOR, 'Peer': GRAY, 'California': DANGER}
     bars = alt.Chart(plot).mark_bar().encode(
         x=alt.X('chronic_rate:Q', title='Chronic absenteeism rate (%)'),
-        y=alt.Y('School:N', sort=plot['School'].tolist(), title=None),
-        color=alt.condition(alt.datum.is_lincoln, alt.value(LINCOLN_COLOR), alt.value(GRAY)),
+        y=alt.Y('School:N', sort=order, title=None),
+        color=alt.Color('kind:N',
+            scale=alt.Scale(domain=list(kind_colors.keys()), range=list(kind_colors.values())),
+            legend=alt.Legend(orient='bottom', title=None)),
         tooltip=[alt.Tooltip('School:N'), alt.Tooltip('chronic_rate:Q', title='Rate %', format='.1f'),
                  alt.Tooltip('chronic_count:Q', title='Count', format='.0f'),
                  alt.Tooltip('eligible_enrollment:Q', title='Eligible', format='.0f')],
     )
     labels = alt.Chart(plot).mark_text(align='left', dx=4, color='#374151').encode(
-        x='chronic_rate:Q', y=alt.Y('School:N', sort=plot['School'].tolist()),
+        x='chronic_rate:Q', y=alt.Y('School:N', sort=order),
         text=alt.Text('chronic_rate:Q', format='.1f'),
     )
     chart = (bars + labels).properties(
@@ -176,9 +217,13 @@ with tab_compare:
     )
     st.altair_chart(configure(chart))
     with st.expander(':material/insights: Analysis', expanded=True):
+        sch = plot[plot['kind'] != 'California']
+        ca_md = (f'- **Red bar = California statewide ({state_latest:.1f}%).** Every Burlingame '
+                 f'elementary sits well below it.\n') if state_latest is not None else ''
         st.markdown(
             f'- **Blue = Lincoln.** Range across the elementaries is '
-            f'{plot["chronic_rate"].min():.1f}%–{plot["chronic_rate"].max():.1f}%.\n'
+            f'{sch["chronic_rate"].min():.1f}%–{sch["chronic_rate"].max():.1f}%.\n'
+            f'{ca_md}'
             f'- Small schools swing more year-to-year: a handful of students moves the rate '
             f'by a full percentage point when eligible enrollment is only ~200-500.'
         )
