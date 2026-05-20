@@ -209,3 +209,75 @@ with right_col:
             f'ELA and the **{ordinal(math_lo)}–{ordinal(math_hi)} percentile** in Math '
             f'— top 5% of California elementary schools every single year.'
         )
+
+
+# ── Beyond test scores: staffing, attendance, spending ────────────────────────
+# CA benchmarks (see the detail pages for sourcing): student/teacher ratio from CDE
+# 2024-25 Certificated Staff Reports; elementary per-pupil from CDE ESSA PPE 2023-24.
+CA_RATIO = 20.8
+CA_PPE_ELEM = 19450
+
+staff = D.load_staffing()
+absent = D.load_absenteeism()
+spend = D.load_spending()
+
+if not staff.empty and not absent.empty and not spend.empty:
+    st.html('<div style="height:14px"></div>')
+
+    elem_staff = staff[staff['grade_span'] == 'GS_K6']
+    s_latest = elem_staff[elem_staff['school_year_end'] == elem_staff['school_year_end'].max()]
+    lin_ratio = s_latest[s_latest['school_code'] == D.LINCOLN_SCHOOL_CODE]['stu_tch_ratio'].iloc[0]
+    ratio_rank = int((s_latest['stu_tch_ratio'] < lin_ratio).sum()) + 1
+    n_elem = len(s_latest)
+
+    ab_tot = absent[(absent['category_code'] == 'TA') & (absent['level'] == 'school')]
+    ab_latest = ab_tot[ab_tot['school_year_end'] == ab_tot['school_year_end'].max()]
+    lin_abs = ab_latest[ab_latest['school_code'] == D.LINCOLN_SCHOOL_CODE]['chronic_rate'].iloc[0]
+    abs_rank = int((ab_latest['chronic_rate'] < lin_abs).sum()) + 1
+    ca_abs = absent[absent['level'] == 'state']
+    ca_abs = ca_abs[ca_abs['school_year_end'] == ca_abs['school_year_end'].max()]['chronic_rate'].iloc[0]
+
+    sp_latest = spend[spend['school_year_end'] == spend['school_year_end'].max()]
+    lin_ppe = sp_latest[sp_latest['school_code'] == D.LINCOLN_SCHOOL_CODE]['total_ppe'].iloc[0]
+    ppe_rank = int((sp_latest['total_ppe'] > lin_ppe).sum()) + 1
+
+    with st.container(border=True):
+        st.markdown(
+            '### :material/dashboard: Beyond test scores: the fuller picture\n'
+            'Three more dimensions of how Lincoln operates, each compared against its 5 sister '
+            'Burlingame elementaries and the California average. See the dedicated pages for detail.'
+        )
+
+        b1, b2, b3 = st.columns(3)
+        b1.metric(
+            ':material/groups: Class size (students per teacher)',
+            f'{lin_ratio:.1f}',
+            delta=f'{lin_ratio - CA_RATIO:+.1f} vs CA avg ({CA_RATIO})',
+            delta_color='inverse',
+            help=f'CDE staffing ratio (a class-size proxy — counts all teacher FTE). '
+                 f'Lincoln is {ordinal(ratio_rank)}-smallest of {n_elem} Burlingame elementaries; '
+                 f'slightly above the CA average.',
+        )
+        b2.metric(
+            ':material/event_busy: Chronic absenteeism',
+            f'{lin_abs:.1f}%',
+            delta=f'{lin_abs - ca_abs:+.1f} pp vs CA ({ca_abs:.1f}%)',
+            delta_color='inverse',
+            help=f'Lincoln has the {ordinal(abs_rank)}-lowest chronic absenteeism of '
+                 f'{n_elem} Burlingame elementaries, and a fraction of the statewide rate.',
+        )
+        b3.metric(
+            ':material/payments: Per-pupil spending',
+            f'${lin_ppe:,.0f}',
+            delta=f'${lin_ppe - CA_PPE_ELEM:+,.0f} vs CA elem avg',
+            help=f'Below the CA elementary average (${CA_PPE_ELEM:,}); '
+                 f'{ordinal(ppe_rank)}-highest of {n_elem} locally. Lower spending reflects '
+                 f'low-poverty (less need-based LCFF/Title I funding), not under-resourcing.',
+        )
+
+        st.caption(
+            ':material/lightbulb: **Takeaway:** Lincoln pairs top-5% academics with the '
+            'district\'s lowest chronic absenteeism, on below-average per-pupil funding — while '
+            'carrying slightly larger-than-average class sizes. Spending and class size reflect '
+            'its low-poverty enrollment more than school decisions.'
+        )
