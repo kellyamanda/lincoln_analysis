@@ -83,6 +83,15 @@ def load_frpm():
     return pd.read_csv(path)
 
 
+@st.cache_data(show_spinner=False)
+def load_staffing():
+    """CDE Student/Staff Ratio data for Burlingame schools (enrollment, teacher FTE, ratios)."""
+    path = os.path.join(SEDA_DIR, 'burlingame_staffing.parquet')
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    return pd.read_parquet(path)
+
+
 def lincoln_caaspp(df):
     return df[df['is_lincoln']].copy()
 

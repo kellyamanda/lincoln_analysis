@@ -25,3 +25,7 @@ school_scores/*.png
 
 # Full SEDA parquets (kept locally as *_full.parquet backups; deployed app uses Burlingame-trimmed versions)
 seda_app/data/*_full.parquet
+
+# Raw CDE source downloads (regenerable; preprocessed into burlingame_*.parquet/csv)
+seda_app/data/staffing_raw/
+seda_app/data/frpm_raw/

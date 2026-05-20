@@ -34,6 +34,11 @@ seda = st.Page(
     title='District SEDA Deep Dive',
     icon=':material/map:',
 )
+staffing = st.Page(
+    'views/staffing.py',
+    title='Staffing & Class Size',
+    icon=':material/groups:',
+)
 
-pg = st.navigation([overview, analysis, caaspp, seda], position='top')
+pg = st.navigation([overview, analysis, caaspp, seda, staffing], position='top')
 pg.run()
