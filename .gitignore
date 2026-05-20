@@ -30,3 +30,4 @@ seda_app/data/*_full.parquet
 seda_app/data/staffing_raw/
 seda_app/data/frpm_raw/
 seda_app/data/absenteeism_raw/
+seda_app/data/spending_raw/

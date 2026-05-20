@@ -44,6 +44,11 @@ absenteeism = st.Page(
     title='Chronic Absenteeism',
     icon=':material/event_busy:',
 )
+spending = st.Page(
+    'views/spending.py',
+    title='Per-Pupil Spending',
+    icon=':material/payments:',
+)
 
-pg = st.navigation([overview, analysis, caaspp, seda, staffing, absenteeism], position='top')
+pg = st.navigation([overview, analysis, caaspp, seda, staffing, absenteeism, spending], position='top')
 pg.run()
