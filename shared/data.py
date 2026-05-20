@@ -92,6 +92,15 @@ def load_staffing():
     return pd.read_parquet(path)
 
 
+@st.cache_data(show_spinner=False)
+def load_absenteeism():
+    """CDE chronic absenteeism for Burlingame elementaries, by school/year/subgroup."""
+    path = os.path.join(SEDA_DIR, 'burlingame_absenteeism.parquet')
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    return pd.read_parquet(path)
+
+
 def lincoln_caaspp(df):
     return df[df['is_lincoln']].copy()
 

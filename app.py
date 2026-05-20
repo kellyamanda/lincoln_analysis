@@ -39,6 +39,11 @@ staffing = st.Page(
     title='Staffing & Class Size',
     icon=':material/groups:',
 )
+absenteeism = st.Page(
+    'views/absenteeism.py',
+    title='Chronic Absenteeism',
+    icon=':material/event_busy:',
+)
 
-pg = st.navigation([overview, analysis, caaspp, seda, staffing], position='top')
+pg = st.navigation([overview, analysis, caaspp, seda, staffing, absenteeism], position='top')
 pg.run()
