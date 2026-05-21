@@ -59,31 +59,44 @@ if lincoln_now is not None:
     n = len(latest)
     rank = int((latest['stu_tch_ratio'] < lincoln_now['stu_tch_ratio']).sum()) + 1
 
-    with st.container(border=True):
-        st.markdown(f'### :material/school: Lincoln Elementary — {LATEST-1}-{str(LATEST)[2:]}')
-        c1, c2, c3 = st.columns(3)
-        c1.metric(
-            ':material/groups: Students per teacher',
-            f"{lincoln_now['stu_tch_ratio']:.1f}",
-            delta=f"{lincoln_now['stu_tch_ratio'] - med_ratio:+.1f} vs peer median",
-            delta_color='inverse',
-            help=f"Peer (other elementaries) median is {med_ratio:.1f}. "
-                 f"Lower = fewer students per teacher FTE.",
-        )
-        c2.metric(
-            ':material/person: Enrollment',
-            f"{int(lincoln_now['enrollment']):,}",
-        )
-        c3.metric(
-            ':material/co_present: Teacher FTE',
-            f"{lincoln_now['teacher_fte']:.1f}",
-            help='Full-time-equivalent certificated teaching staff on Census Day.',
-        )
-        st.caption(
-            f':material/leaderboard: Lincoln has the **{_ordinal(rank)}-smallest** '
-            f'student/teacher ratio of the {n} Burlingame elementaries this year '
-            f'(1st = smallest ratio = most teachers per student).'
-        )
+    lincoln_hist = elem[elem['is_lincoln']].sort_values('school_year_end')
+    ratio_spark = lincoln_hist['stu_tch_ratio'].dropna().tolist()
+    enroll_spark = lincoln_hist['enrollment'].dropna().tolist()
+    fte_spark = lincoln_hist['teacher_fte'].dropna().tolist()
+
+    st.markdown(f'### :material/school: Lincoln Elementary — {LATEST-1}-{str(LATEST)[2:]}')
+    c1, c2, c3 = st.columns(3)
+    c1.metric(
+        ':material/groups: Students per teacher',
+        f"{lincoln_now['stu_tch_ratio']:.1f}",
+        delta=f"{lincoln_now['stu_tch_ratio'] - med_ratio:+.1f} vs peer median",
+        delta_color='inverse',
+        border=True,
+        chart_data=ratio_spark,
+        chart_type='line',
+        help=f"Peer (other elementaries) median is {med_ratio:.1f}. "
+             f"Lower = fewer students per teacher FTE. Sparkline = Lincoln over time.",
+    )
+    c2.metric(
+        ':material/person: Enrollment',
+        f"{int(lincoln_now['enrollment']):,}",
+        border=True,
+        chart_data=enroll_spark,
+        chart_type='line',
+    )
+    c3.metric(
+        ':material/co_present: Teacher FTE',
+        f"{lincoln_now['teacher_fte']:.1f}",
+        border=True,
+        chart_data=fte_spark,
+        chart_type='line',
+        help='Full-time-equivalent certificated teaching staff on Census Day.',
+    )
+    st.caption(
+        f':material/leaderboard: Lincoln has the **{_ordinal(rank)}-smallest** '
+        f'student/teacher ratio of the {n} Burlingame elementaries this year '
+        f'(1st = smallest ratio = most teachers per student).'
+    )
 
 st.html('<div style="height:10px"></div>')
 
@@ -145,7 +158,7 @@ with tab_compare:
         title=alt.TitleParams(f'{metric} by school — {LATEST-1}-{str(LATEST)[2:]}', dy=-4),
         padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 40},
     )
-    st.altair_chart(configure(chart))
+    st.altair_chart(configure(chart), width='stretch')
 
     with st.expander(':material/insights: Analysis', expanded=True):
         st.markdown(
@@ -218,7 +231,7 @@ with tab_trend:
         title=alt.TitleParams(f'{metric_t}, {elem["school_year_end"].min()}–{LATEST}', dy=-4),
         padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 70},
     )
-    st.altair_chart(configure(chart_t))
+    st.altair_chart(configure(chart_t), width='stretch')
 
     with st.expander(':material/insights: Analysis', expanded=True):
         lin_series = elem[elem['is_lincoln']].sort_values('school_year_end')

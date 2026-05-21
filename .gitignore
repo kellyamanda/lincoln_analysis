@@ -17,6 +17,9 @@ venv/
 # Claude Code local settings
 .claude/
 
+# Local dev smoke-test helper (not part of the app)
+appcheck.py
+
 # Raw CAASPP source data (regenerable from CDE; preprocessed into school_scores/*.parquet)
 school_scores/*.txt
 school_scores/*.zip

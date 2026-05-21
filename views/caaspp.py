@@ -248,8 +248,8 @@ with tab_lincoln:
             with st.container(border=True):
                 st.markdown(f'<h2 style="font-size:1.7rem;font-weight:700;margin:0 0 0.6rem 0">{subject}</h2>',
                             unsafe_allow_html=True)
-                st.altair_chart(configure(make_rank_chart(subject, grade_l)))
-                st.altair_chart(configure(make_score_chart(subject, grade_l, show_bands)))
+                st.altair_chart(configure(make_rank_chart(subject, grade_l)), width='stretch')
+                st.altair_chart(configure(make_score_chart(subject, grade_l, show_bands)), width='stretch')
 
                 st.markdown('**2024–25 Lincoln Results**')
                 if latest is not None:
@@ -340,7 +340,7 @@ with tab_subgroup:
                                           dy=-8, fontSize=13, anchor='start'),
                     padding={'top': 35, 'bottom': 10, 'left': 5, 'right': 10},
                 )
-                st.altair_chart(configure(chart))
+                st.altair_chart(configure(chart), width='stretch')
 
     if suppressed:
         st.info(
@@ -363,7 +363,7 @@ with tab_trends:
             st.markdown(f'### {subject}')
             chart = make_trend_chart(subject, grade_sel)
             if chart:
-                st.altair_chart(configure(chart))
+                st.altair_chart(configure(chart), width='stretch')
 
     rows_avg = []
     for subject in subjects:
@@ -446,7 +446,7 @@ with tab_cohort:
 
         with col:
             st.markdown(f'### {subject}')
-            st.altair_chart(configure(chart_c))
+            st.altair_chart(configure(chart_c), width='stretch')
 
     with st.expander(':material/table_chart: Cohort data table'):
         for subject in subjects:

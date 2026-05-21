@@ -168,7 +168,7 @@ with tab_trends:
                 with col:
                     st.markdown(f'### {subject}')
                     if not df_sub.empty:
-                        st.altair_chart(configure(trend_chart(df_sub, subject, show_bands)))
+                        st.altair_chart(configure(trend_chart(df_sub, subject, show_bands)), width='stretch')
 
         # auto-stats
         stat_lines = []
@@ -240,7 +240,7 @@ with tab_trends:
                         ).properties(width=560, height=340,
                                      title=alt.TitleParams(f'{subject} — {sg_label} by grade', dy=-4),
                                      padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 5})
-                        st.altair_chart(configure(chart))
+                        st.altair_chart(configure(chart), width='stretch')
 
         stat_lines = ['- Each grade is a different cohort of students each year — this is not cohort tracking. '
                       'Use the Cohort Tracker tab to follow the same group across grades.']
@@ -297,7 +297,7 @@ with tab_gaps:
                         title=alt.TitleParams(subject, dy=-4),
                         padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 5},
                     )
-                    st.altair_chart(configure(chart))
+                    st.altair_chart(configure(chart), width='stretch')
 
         analysis_panel('gaps',
             '- A gap can shrink because the lower-performing group improved, '
@@ -364,7 +364,7 @@ with tab_snap:
                         title=alt.TitleParams(subject, dy=-4),
                         padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 5},
                     )
-                    st.altair_chart(configure(chart))
+                    st.altair_chart(configure(chart), width='stretch')
 
         analysis_panel('grade_snapshot',
             f'- This shows different students at each grade level in **{selected_year}**, '
@@ -445,7 +445,7 @@ with tab_cohort:
                 title=alt.TitleParams(subject, dy=-4),
                 padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 5},
             )
-            st.altair_chart(configure(chart))
+            st.altair_chart(configure(chart), width='stretch')
 
     third_grade_year = selected_cohort + 3
     analysis_panel('cohort',
@@ -501,7 +501,7 @@ with tab_demo:
             chart = chart.properties(width=560, height=320,
                                      title=alt.TitleParams('Racial / Ethnic Composition', dy=-4),
                                      padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 5})
-            st.altair_chart(configure(chart))
+            st.altair_chart(configure(chart), width='stretch')
 
     with col2:
         st.markdown('### % Economically Disadvantaged')
@@ -536,7 +536,7 @@ with tab_demo:
                 title=alt.TitleParams('% Economically Disadvantaged (two sources)', dy=-4),
                 padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 5},
             )
-            st.altair_chart(configure(chart))
+            st.altair_chart(configure(chart), width='stretch')
             st.caption(
                 '**2009–2019:** SEDA state-defined economically disadvantaged. '
                 '**2020–2025:** CDE FRPM eligibility (direct certification via Medi-Cal/SNAP). '
@@ -555,7 +555,7 @@ with tab_demo:
             tooltip=['Year:O', alt.Tooltip('Students:Q', format=',')],
         ).properties(width=1140, height=240,
                      padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 5})
-        st.altair_chart(configure(chart))
+        st.altair_chart(configure(chart), width='stretch')
 
     stat_lines = []
     if 'pct_white' in demo.columns and 'pct_asian' in demo.columns:

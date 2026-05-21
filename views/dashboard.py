@@ -20,6 +20,9 @@ COLOR_HEX = {
     'Green': '#5BB552', 'Blue': '#4C7FB8', 'Not rated': '#E5E7EB',
 }
 COLOR_ORDER = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Not rated']
+# Map Dashboard color names to st.badge's supported color keywords.
+BADGE_COLOR = {'Red': 'red', 'Orange': 'orange', 'Yellow': 'yellow',
+               'Green': 'green', 'Blue': 'blue', 'Not rated': 'gray'}
 INDICATOR_ORDER = ['ELA', 'Math', 'Chronic Absenteeism', 'Suspension', 'EL Progress']
 
 # How to read currstatus, and whether higher is better.
@@ -74,18 +77,14 @@ with st.container(border=True):
             continue
         r = row.iloc[0]
         cname = r['color_name']
-        hexc = COLOR_HEX[cname]
         status = fmt_status(ind, r['currstatus'])
-        text_color = '#1F2937' if cname in ('Yellow', 'Not rated') else '#FFFFFF'
-        rated = cname if cname != 'Not rated' else 'Not rated'
-        col.markdown(
-            f'<div style="background:{hexc};border-radius:8px;padding:10px 8px;text-align:center">'
-            f'<div style="font-size:0.72rem;color:{text_color};opacity:0.9">{ind}</div>'
-            f'<div style="font-size:1.05rem;font-weight:700;color:{text_color}">{status}</div>'
-            f'<div style="font-size:0.7rem;color:{text_color};opacity:0.9">{rated}</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
+        with col:
+            st.markdown(f'**{ind}**')
+            if cname == 'Not rated':
+                st.badge('Not rated', color='gray', icon=':material/remove:')
+            else:
+                st.badge(f'{status} · {cname}', color=BADGE_COLOR[cname],
+                         icon=':material/circle:')
     st.caption(
         ':material/info: Lincoln is Blue (highest) on ELA, Math, and Suspension, and Green on '
         'Chronic Absenteeism. EL Progress is unrated — too few English-learner students to assign '
@@ -130,7 +129,7 @@ chart = (heat + text).properties(
     width=620, height=58 * len(school_order),
     padding={'top': 10, 'bottom': 10, 'left': 5, 'right': 5},
 )
-st.altair_chart(configure(chart))
+st.altair_chart(configure(chart), width='stretch')
 
 with st.expander(':material/insights: Analysis', expanded=True):
     st.markdown(

@@ -64,26 +64,34 @@ if lincoln_now is not None:
     rank = int((latest['total_ppe'] > lincoln_now['total_ppe']).sum()) + 1  # 1 = highest-spending
     fed_share = 100 * lincoln_now['federal_total'] / lincoln_now['total_ppe']
 
-    with st.container(border=True):
-        st.markdown(f'### :material/school: Lincoln Elementary — {LATEST-1}-{str(LATEST)[2:]}')
-        c1, c2, c3 = st.columns(3)
-        c1.metric(
-            ':material/payments: Total per-pupil spending',
-            f"${lincoln_now['total_ppe']:,.0f}",
-            delta=f"${lincoln_now['total_ppe'] - med:+,.0f} vs peer median",
-            help=f"Other Burlingame elementaries' median is ${med:,.0f}.",
-        )
-        c2.metric(
-            ':material/leaderboard: Rank among peers',
-            f"{_ordinal(rank)} of {n}",
-            help='1st = highest per-pupil spending among the Burlingame elementaries.',
-        )
-        c3.metric(
-            ':material/account_balance: Federally funded share',
-            f"{fed_share:.1f}%",
-            help='Share of per-pupil spending from federal sources (Title I, etc.). '
-                 'Higher-poverty schools typically draw more.',
-        )
+    ppe_spark = (spend[spend['is_lincoln']].dropna(subset=['total_ppe'])
+                 .sort_values('school_year_end')['total_ppe'].tolist())
+
+    st.markdown(f'### :material/school: Lincoln Elementary — {LATEST-1}-{str(LATEST)[2:]}')
+    c1, c2, c3 = st.columns(3)
+    c1.metric(
+        ':material/payments: Total per-pupil spending',
+        f"${lincoln_now['total_ppe']:,.0f}",
+        delta=f"${lincoln_now['total_ppe'] - med:+,.0f} vs peer median",
+        border=True,
+        chart_data=ppe_spark,
+        chart_type='line',
+        help=f"Other Burlingame elementaries' median is ${med:,.0f}. "
+             f"Sparkline = Lincoln's per-pupil spending over time.",
+    )
+    c2.metric(
+        ':material/leaderboard: Rank among peers',
+        f"{_ordinal(rank)} of {n}",
+        border=True,
+        help='1st = highest per-pupil spending among the Burlingame elementaries.',
+    )
+    c3.metric(
+        ':material/account_balance: Federally funded share',
+        f"{fed_share:.1f}%",
+        border=True,
+        help='Share of per-pupil spending from federal sources (Title I, etc.). '
+             'Higher-poverty schools typically draw more.',
+    )
 
 st.html('<div style="height:10px"></div>')
 
@@ -121,7 +129,7 @@ with tab_compare:
         title=alt.TitleParams(f'Total per-pupil spending — {LATEST-1}-{str(LATEST)[2:]}', dy=-4),
         padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 70},
     )
-    st.altair_chart(configure(chart))
+    st.altair_chart(configure(chart), width='stretch')
     with st.expander(':material/insights: Analysis', expanded=True):
         hi = plot.iloc[0]
         lo = plot.iloc[-1]
@@ -172,7 +180,7 @@ with tab_composition:
         title=alt.TitleParams(f'Funding composition — {LATEST-1}-{str(LATEST)[2:]}', dy=-4),
         padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 20},
     )
-    st.altair_chart(configure(chart))
+    st.altair_chart(configure(chart), width='stretch')
     with st.expander(':material/insights: Analysis', expanded=True):
         cen = latest.iloc[0]
         st.markdown(
@@ -222,7 +230,7 @@ with tab_trend:
         title=alt.TitleParams('Total per-pupil spending by school', dy=-4),
         padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 80},
     )
-    st.altair_chart(configure(chart))
+    st.altair_chart(configure(chart), width='stretch')
     with st.expander(':material/insights: Analysis', expanded=True):
         lin = spend[spend['is_lincoln']].dropna(subset=['total_ppe']).sort_values('school_year_end')
         if len(lin) >= 2:
