@@ -135,7 +135,7 @@ def make_rank_chart(subject, grade):
         y=alt.Y('Value:Q', title='CA Percentile Rank', scale=alt.Scale(domain=[45, 100])),
         color=alt.Color('Series:N',
                         scale=alt.Scale(domain=domain, range=range_colors),
-                        legend=alt.Legend(title='Series', orient='bottom', columns=3)),
+                        legend=alt.Legend(title='CA Benchmarks', orient='right', symbolType='stroke')),
         strokeDash=alt.condition(alt.datum.Series == 'Lincoln', alt.value([1, 0]), alt.value([4, 3])),
         strokeWidth=alt.condition(alt.datum.Series == 'Lincoln', alt.value(2.5), alt.value(1.3)),
         opacity=alt.condition(alt.datum.Series == 'Lincoln', alt.value(1.0), alt.value(0.75)),
@@ -147,8 +147,8 @@ def make_rank_chart(subject, grade):
         base.mark_point(filled=True, size=60).transform_filter(alt.datum.Series == 'Lincoln'),
     ).properties(
         width=560, height=280,
-        title=alt.TitleParams(f'CA Percentile Rank — {subject} Grade {grade}', dy=-4),
-        padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 5},
+        title=alt.TitleParams(f'CA Percentile Rank — {subject} Grade {grade}', anchor='start', limit=0),
+        padding={'top': 34, 'bottom': 10, 'left': 5, 'right': 5},
     )
 
 
@@ -166,7 +166,7 @@ def make_score_chart(subject, grade, show_bands):
         color=alt.Color('Label:N', scale=alt.Scale(
             domain=[f'{p}th pct' for p in show_bands],
             range=[PCT_COLORS[p] for p in show_bands],
-        ), legend=alt.Legend(title='CA Benchmarks', orient='bottom', columns=3)),
+        ), legend=alt.Legend(title='CA Benchmarks', orient='right', symbolType='stroke')),
         strokeWidth=alt.value(1.5),
         tooltip=['Year:O', 'Label:N', alt.Tooltip('Value:Q', format='.1f', title='% Met Above')],
     )
@@ -180,8 +180,8 @@ def make_score_chart(subject, grade, show_bands):
 
     return alt.layer(bands, line, points).properties(
         width=560, height=280,
-        title=alt.TitleParams(f'% Standard Met and Above — {subject} Grade {grade}', dy=-4),
-        padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 5},
+        title=alt.TitleParams(f'% Standard Met and Above — {subject} Grade {grade}', anchor='start', limit=0),
+        padding={'top': 34, 'bottom': 10, 'left': 5, 'right': 5},
     )
 
 
@@ -216,7 +216,11 @@ def make_trend_chart(subject, grade_sel):
         rule_90, rule_95,
         base.mark_line(strokeWidth=2.5),
         base.mark_point(size=70, filled=True),
-    ).properties(width=560, height=380, title=f'Lincoln Percentile Rank — {subject}')
+    ).properties(
+        width=560, height=380,
+        title=alt.TitleParams(f'Lincoln Percentile Rank — {subject}', anchor='start', limit=0),
+        padding={'top': 34, 'bottom': 10, 'left': 5, 'right': 5},
+    )
 
 
 # ── Page ──────────────────────────────────────────────────────────────────────
@@ -444,7 +448,11 @@ with tab_cohort:
         else:
             chart_c = lines
 
-        chart_c = chart_c.properties(width=560, height=400, title=f'Cohort Tracking — {subject}')
+        chart_c = chart_c.properties(
+            width=560, height=400,
+            title=alt.TitleParams(f'Cohort Tracking — {subject}', anchor='start', limit=0),
+            padding={'top': 34, 'bottom': 10, 'left': 5, 'right': 5},
+        )
 
         with col:
             st.markdown(f'### {subject}')
