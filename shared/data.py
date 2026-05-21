@@ -110,6 +110,15 @@ def load_spending():
     return pd.read_parquet(path)
 
 
+@st.cache_data(show_spinner=False)
+def load_dashboard():
+    """CA School Dashboard indicator colors/status for Burlingame elementaries."""
+    path = os.path.join(SEDA_DIR, 'burlingame_dashboard.parquet')
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    return pd.read_parquet(path)
+
+
 def lincoln_caaspp(df):
     return df[df['is_lincoln']].copy()
 

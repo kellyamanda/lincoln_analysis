@@ -54,6 +54,11 @@ guide = st.Page(
     title='How to Read This',
     icon=':material/menu_book:',
 )
+dashboard = st.Page(
+    'views/dashboard.py',
+    title='CA Dashboard',
+    icon=':material/dashboard:',
+)
 
 # Top nav: empty-string section renders as direct items; named sections become
 # collapsible dropdowns (Streamlit position="top" behavior).
@@ -61,7 +66,7 @@ pg = st.navigation(
     {
         '': [overview, analysis, guide],
         'Score Detail': [caaspp, seda],
-        'Resources & Environment': [staffing, absenteeism, spending],
+        'Resources & Environment': [staffing, absenteeism, spending, dashboard],
     },
     position='top',
 )
