@@ -49,12 +49,17 @@ spending = st.Page(
     title='Per-Pupil Spending',
     icon=':material/payments:',
 )
+guide = st.Page(
+    'views/guide.py',
+    title='How to Read This',
+    icon=':material/menu_book:',
+)
 
 # Top nav: empty-string section renders as direct items; named sections become
 # collapsible dropdowns (Streamlit position="top" behavior).
 pg = st.navigation(
     {
-        '': [overview, analysis],
+        '': [overview, analysis, guide],
         'Score Detail': [caaspp, seda],
         'Resources & Environment': [staffing, absenteeism, spending],
     },
