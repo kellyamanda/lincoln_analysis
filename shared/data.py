@@ -128,6 +128,15 @@ def load_teachers():
     return pd.read_parquet(path)
 
 
+@st.cache_data(show_spinner=False)
+def load_enrollment():
+    """CDE Census Day enrollment for Burlingame elementaries (race, EL, by grade)."""
+    path = os.path.join(SEDA_DIR, 'burlingame_enrollment.parquet')
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    return pd.read_parquet(path)
+
+
 def lincoln_caaspp(df):
     return df[df['is_lincoln']].copy()
 

@@ -64,14 +64,21 @@ dashboard = st.Page(
     title='CA Dashboard',
     icon=':material/dashboard:',
 )
+enrollment = st.Page(
+    'views/enrollment.py',
+    title='Enrollment & Demographics',
+    icon=':material/diversity_3:',
+)
 
 # Top nav: empty-string section renders as direct items; named sections become
-# collapsible dropdowns (Streamlit position="top" behavior).
+# collapsible dropdowns. Section labels carry a material icon so the dropdowns
+# match the icon styling of the direct pages.
 pg = st.navigation(
     {
         '': [overview, analysis, guide],
-        'Score Detail': [caaspp, seda],
-        'Resources & Environment': [staffing, teachers, absenteeism, spending, dashboard],
+        ':material/grading: Score Detail': [caaspp, seda],
+        ':material/account_balance: Resources & Environment':
+            [staffing, teachers, absenteeism, spending, dashboard, enrollment],
     },
     position='top',
 )
