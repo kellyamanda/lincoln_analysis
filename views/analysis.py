@@ -171,9 +171,9 @@ with tab_overall:
 
     ela_col, math_col = st.columns(2)
     with ela_col:
-        st.altair_chart(configure(lincoln_two_metric_chart(ela_yr, 'ELA')))
+        st.altair_chart(configure(lincoln_two_metric_chart(ela_yr, 'ELA')), width='stretch')
     with math_col:
-        st.altair_chart(configure(lincoln_two_metric_chart(math_yr, 'Math')))
+        st.altair_chart(configure(lincoln_two_metric_chart(math_yr, 'Math')), width='stretch')
 
     def section1_analysis():
         def fmt_change(diff, z):
@@ -248,9 +248,9 @@ with tab_compare:
 
     ela_col, math_col = st.columns(2)
     with ela_col:
-        st.altair_chart(configure(burl_chart('ELA')))
+        st.altair_chart(configure(burl_chart('ELA')), width='stretch')
     with math_col:
-        st.altair_chart(configure(burl_chart('Math')))
+        st.altair_chart(configure(burl_chart('Math')), width='stretch')
 
     st.markdown('### Within California (percentile rank of all elementary schools)')
 
@@ -287,9 +287,9 @@ with tab_compare:
     ela_chart, ela_rank_df = ca_rank_chart('ELA')
     math_chart, math_rank_df = ca_rank_chart('Math')
     with ela_col:
-        st.altair_chart(configure(ela_chart))
+        st.altair_chart(configure(ela_chart), width='stretch')
     with math_col:
-        st.altair_chart(configure(math_chart))
+        st.altair_chart(configure(math_chart), width='stretch')
 
     ela_latest = ela_rank_df.sort_values('Year').iloc[-1]
     math_latest = math_rank_df.sort_values('Year').iloc[-1]
@@ -354,22 +354,22 @@ with tab_bis:
     with ela_col:
         st.altair_chart(configure(
             bis_chart('ELA', 'Percentage Standard Exceeded', '% Exceeded', [30, 55])
-        ))
+        ), width='stretch')
     with math_col:
         st.altair_chart(configure(
             bis_chart('Math', 'Percentage Standard Exceeded', '% Exceeded', [35, 65])
-        ))
+        ), width='stretch')
 
     st.markdown('#### % Met & Above by grade')
     ela_col, math_col = st.columns(2)
     with ela_col:
         st.altair_chart(configure(
             bis_chart('ELA', 'Percentage Standard Met and Above', '% Met & Above', [65, 90])
-        ))
+        ), width='stretch')
     with math_col:
         st.altair_chart(configure(
             bis_chart('Math', 'Percentage Standard Met and Above', '% Met & Above', [55, 85])
-        ))
+        ), width='stretch')
 
     @st.cache_data(show_spinner=False)
     def bis_pre_post_table():
@@ -427,31 +427,41 @@ with tab_bis:
 # ── FOOTER: What this can / cannot tell you ───────────────────────────────────
 
 st.divider()
-st.markdown('## :material/help_outline: What this analysis can and cannot tell you')
+st.markdown('#### :material/help_outline: What this analysis can and cannot tell you')
 
 c1, c2 = st.columns(2)
 with c1:
     with st.container(border=True):
-        st.markdown(':green[:material/check_circle:] **The data does support:**')
         st.markdown(
-            '- Lincoln K-5 % Met+Above is stable pre vs post-COVID (no statistical decline).\n'
-            '- Lincoln K-5 % Exceeded in math has *increased* '
-            f'({math_exc["pre"]:.1f}% → {math_exc["post"]:.1f}%, z = {math_exc["z"]:.2f}).\n'
-            '- Lincoln is in the top 5% of California elementaries every year since 2015.\n'
-            '- The district-level decline is concentrated in Roosevelt, Washington, and McKinley.\n'
-            '- BIS high-achiever shares in 6th and 7th grade ELA dropped ~10pp post-COVID.'
+            '<div style="font-size:0.88rem; line-height:1.5">'
+            '<div style="margin-bottom:0.4rem; color:#16A34A; font-weight:600">'
+            '✓ The data does support:</div>'
+            '<ul style="margin:0; padding-left:1.1rem">'
+            '<li>Lincoln K-5 % Met+Above is stable pre vs post-COVID (no statistical decline).</li>'
+            f'<li>Lincoln K-5 % Exceeded in math has <i>increased</i> '
+            f'({math_exc["pre"]:.1f}% → {math_exc["post"]:.1f}%, z = {math_exc["z"]:.2f}).</li>'
+            '<li>Lincoln is in the top 5% of California elementaries every year since 2015.</li>'
+            '<li>The district-level decline is concentrated in Roosevelt, Washington, and McKinley.</li>'
+            '<li>BIS high-achiever shares in 6th and 7th grade ELA dropped ~10pp post-COVID.</li>'
+            '</ul></div>',
+            unsafe_allow_html=True,
         )
 with c2:
     with st.container(border=True):
-        st.markdown(':orange[:material/warning:] **The data cannot tell you:**')
         st.markdown(
-            "- Whether your specific child's learning has changed.\n"
-            '- Whether high-achievers at Lincoln are being adequately challenged '
-            '(no within-school distributional data).\n'
-            '- Whether subgroup-level changes are happening at Lincoln '
-            '(subgroup cells suppressed below n=11).\n'
-            '- What is causing the BIS dip (curriculum? staffing? remote-era cohorts?).\n'
-            '- How Lincoln teachers or principals are performing.'
+            '<div style="font-size:0.88rem; line-height:1.5">'
+            '<div style="margin-bottom:0.4rem; color:#D97706; font-weight:600">'
+            '⚠ The data cannot tell you:</div>'
+            '<ul style="margin:0; padding-left:1.1rem">'
+            "<li>Whether your specific child's learning has changed.</li>"
+            '<li>Whether high-achievers at Lincoln are being adequately challenged '
+            '(no within-school distributional data).</li>'
+            '<li>Whether subgroup-level changes are happening at Lincoln '
+            '(subgroup cells suppressed below n=11).</li>'
+            '<li>What is causing the BIS dip (curriculum? staffing? remote-era cohorts?).</li>'
+            '<li>How Lincoln teachers or principals are performing.</li>'
+            '</ul></div>',
+            unsafe_allow_html=True,
         )
 
 st.caption(
