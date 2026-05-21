@@ -166,7 +166,7 @@ def make_score_chart(subject, grade, show_bands):
         color=alt.Color('Label:N', scale=alt.Scale(
             domain=[f'{p}th pct' for p in show_bands],
             range=[PCT_COLORS[p] for p in show_bands],
-        ), legend=alt.Legend(title='CA Benchmarks')),
+        ), legend=alt.Legend(title='CA Benchmarks', orient='bottom', columns=3)),
         strokeWidth=alt.value(1.5),
         tooltip=['Year:O', 'Label:N', alt.Tooltip('Value:Q', format='.1f', title='% Met Above')],
     )
@@ -179,7 +179,9 @@ def make_score_chart(subject, grade, show_bands):
         x='Year:O', y='Pct Met Above:Q')
 
     return alt.layer(bands, line, points).properties(
-        width=560, height=260, title=f'% Standard Met and Above — {subject} Grade {grade}',
+        width=560, height=280,
+        title=alt.TitleParams(f'% Standard Met and Above — {subject} Grade {grade}', dy=-4),
+        padding={'top': 20, 'bottom': 10, 'left': 5, 'right': 5},
     )
 
 
