@@ -39,6 +39,11 @@ staffing = st.Page(
     title='Staffing & Class Size',
     icon=':material/groups:',
 )
+teachers = st.Page(
+    'views/teachers.py',
+    title='Teacher Experience',
+    icon=':material/co_present:',
+)
 absenteeism = st.Page(
     'views/absenteeism.py',
     title='Chronic Absenteeism',
@@ -66,7 +71,7 @@ pg = st.navigation(
     {
         '': [overview, analysis, guide],
         'Score Detail': [caaspp, seda],
-        'Resources & Environment': [staffing, absenteeism, spending, dashboard],
+        'Resources & Environment': [staffing, teachers, absenteeism, spending, dashboard],
     },
     position='top',
 )

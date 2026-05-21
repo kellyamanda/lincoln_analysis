@@ -119,6 +119,15 @@ def load_dashboard():
     return pd.read_parquet(path)
 
 
+@st.cache_data(show_spinner=False)
+def load_teachers():
+    """CDE teacher experience for Burlingame elementaries (avg years, novice share)."""
+    path = os.path.join(SEDA_DIR, 'burlingame_teachers.parquet')
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    return pd.read_parquet(path)
+
+
 def lincoln_caaspp(df):
     return df[df['is_lincoln']].copy()
 
