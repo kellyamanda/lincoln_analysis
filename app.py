@@ -21,17 +21,17 @@ overview = st.Page(
 )
 analysis = st.Page(
     'views/analysis.py',
-    title='Lincoln Analysis',
+    title='Academic Analysis',
     icon=':material/analytics:',
 )
 caaspp = st.Page(
     'views/caaspp.py',
-    title='Lincoln CAASPP Deep Dive',
+    title='CAASPP',
     icon=':material/school:',
 )
 seda = st.Page(
     'views/seda.py',
-    title='District SEDA Deep Dive',
+    title='SEDA',
     icon=':material/map:',
 )
 staffing = st.Page(
@@ -50,5 +50,14 @@ spending = st.Page(
     icon=':material/payments:',
 )
 
-pg = st.navigation([overview, analysis, caaspp, seda, staffing, absenteeism, spending], position='top')
+# Top nav: empty-string section renders as direct items; named sections become
+# collapsible dropdowns (Streamlit position="top" behavior).
+pg = st.navigation(
+    {
+        '': [overview, analysis],
+        'Score Detail': [caaspp, seda],
+        'Resources & Environment': [staffing, absenteeism, spending],
+    },
+    position='top',
+)
 pg.run()
