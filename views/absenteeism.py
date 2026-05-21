@@ -56,35 +56,27 @@ if lincoln_now is not None:
     med = peers['chronic_rate'].median()
     n = len(latest_total)
     rank = int((latest_total['chronic_rate'] < lincoln_now['chronic_rate']).sum()) + 1
-    # Lincoln rate trend (excluding the non-comparable distance-learning year) for the sparkline.
-    spark = (total[total['is_lincoln'] & (total['school_year_end'] != COVID_YEAR)]
-             .dropna(subset=['chronic_rate']).sort_values('school_year_end')['chronic_rate'].tolist())
 
-    st.markdown(f'### :material/school: Lincoln Elementary — {LATEST-1}-{str(LATEST)[2:]}')
-    c1, c2, c3 = st.columns(3)
-    c1.metric(
-        ':material/event_busy: Chronic absenteeism rate',
-        f"{lincoln_now['chronic_rate']:.1f}%",
-        delta=f"{lincoln_now['chronic_rate'] - med:+.1f} pp vs peer median",
-        delta_color='inverse',
-        border=True,
-        chart_data=spark,
-        chart_type='line',
-        help=f"Other Burlingame elementaries' median is {med:.1f}%. Lower is better. "
-             f"Sparkline = Lincoln's rate over time (excl. 2020-21).",
-    )
-    c2.metric(
-        ':material/groups: Chronically absent students',
-        f"{int(lincoln_now['chronic_count'])}",
-        border=True,
-        help=f"Out of {int(lincoln_now['eligible_enrollment'])} eligible students.",
-    )
-    c3.metric(
-        ':material/trending_down: Rank among peers',
-        f"{_ordinal(rank)} of {n}",
-        border=True,
-        help='1st = lowest (best) chronic absenteeism rate among the Burlingame elementaries.',
-    )
+    with st.container(border=True):
+        st.markdown(f'### :material/school: Lincoln Elementary — {LATEST-1}-{str(LATEST)[2:]}')
+        c1, c2, c3 = st.columns(3)
+        c1.metric(
+            ':material/event_busy: Chronic absenteeism rate',
+            f"{lincoln_now['chronic_rate']:.1f}%",
+            delta=f"{lincoln_now['chronic_rate'] - med:+.1f} pp vs peer median",
+            delta_color='inverse',
+            help=f"Other Burlingame elementaries' median is {med:.1f}%. Lower is better.",
+        )
+        c2.metric(
+            ':material/groups: Chronically absent students',
+            f"{int(lincoln_now['chronic_count'])}",
+            help=f"Out of {int(lincoln_now['eligible_enrollment'])} eligible students.",
+        )
+        c3.metric(
+            ':material/trending_down: Rank among peers',
+            f"{_ordinal(rank)} of {n}",
+            help='1st = lowest (best) chronic absenteeism rate among the Burlingame elementaries.',
+        )
 
 st.html('<div style="height:10px"></div>')
 

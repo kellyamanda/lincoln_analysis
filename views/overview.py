@@ -241,16 +241,7 @@ if not staff.empty and not absent.empty and not spend.empty:
     lin_ppe = sp_latest[sp_latest['school_code'] == D.LINCOLN_SCHOOL_CODE]['total_ppe'].iloc[0]
     ppe_rank = int((sp_latest['total_ppe'] > lin_ppe).sum()) + 1
 
-    # Lincoln multi-year series for the metric sparklines.
-    lin_code = D.LINCOLN_SCHOOL_CODE
-    ratio_spark = (elem_staff[elem_staff['school_code'] == lin_code]
-                   .sort_values('school_year_end')['stu_tch_ratio'].dropna().tolist())
-    abs_spark = (ab_tot[(ab_tot['school_code'] == lin_code) & (ab_tot['school_year_end'] != 2021)]
-                 .sort_values('school_year_end')['chronic_rate'].dropna().tolist())
-    ppe_spark = (spend[spend['school_code'] == lin_code]
-                 .sort_values('school_year_end')['total_ppe'].dropna().tolist())
-
-    with st.container():
+    with st.container(border=True):
         st.markdown(
             '### :material/dashboard: Beyond test scores: the fuller picture\n'
             'Three more dimensions of how Lincoln operates, each compared against its 5 sister '
@@ -263,9 +254,6 @@ if not staff.empty and not absent.empty and not spend.empty:
             f'{lin_ratio:.1f}',
             delta=f'{lin_ratio - CA_RATIO:+.1f} vs CA avg ({CA_RATIO})',
             delta_color='inverse',
-            border=True,
-            chart_data=ratio_spark,
-            chart_type='line',
             help=f'CDE staffing ratio (a class-size proxy — counts all teacher FTE). '
                  f'Lincoln is {ordinal(ratio_rank)}-smallest of {n_elem} Burlingame elementaries; '
                  f'slightly above the CA average.',
@@ -275,22 +263,16 @@ if not staff.empty and not absent.empty and not spend.empty:
             f'{lin_abs:.1f}%',
             delta=f'{lin_abs - ca_abs:+.1f} pp vs CA ({ca_abs:.1f}%)',
             delta_color='inverse',
-            border=True,
-            chart_data=abs_spark,
-            chart_type='line',
             help=f'Lincoln has the {ordinal(abs_rank)}-lowest chronic absenteeism of '
                  f'{n_elem} Burlingame elementaries, and a fraction of the statewide rate.',
         )
         b3.metric(
             ':material/payments: Per-pupil spending',
             f'${lin_ppe:,.0f}',
-            delta=f'${lin_ppe - CA_PPE_ELEM:+,.0f} vs CA elem avg',
-            border=True,
-            chart_data=ppe_spark,
-            chart_type='line',
-            help=f'Below the CA elementary average (${CA_PPE_ELEM:,}); '
-                 f'{ordinal(ppe_rank)}-highest of {n_elem} locally. Lower spending reflects '
-                 f'low-poverty (less need-based LCFF/Title I funding), not under-resourcing.',
+            help=f'CA elementary average is ${CA_PPE_ELEM:,}; Lincoln is '
+                 f'{ordinal(ppe_rank)}-highest of {n_elem} locally. Spending largely tracks '
+                 f'student need (low-poverty districts draw less LCFF/Title I), so higher or '
+                 f'lower is not inherently better.',
         )
 
         st.caption(

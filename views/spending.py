@@ -64,34 +64,28 @@ if lincoln_now is not None:
     rank = int((latest['total_ppe'] > lincoln_now['total_ppe']).sum()) + 1  # 1 = highest-spending
     fed_share = 100 * lincoln_now['federal_total'] / lincoln_now['total_ppe']
 
-    ppe_spark = (spend[spend['is_lincoln']].dropna(subset=['total_ppe'])
-                 .sort_values('school_year_end')['total_ppe'].tolist())
-
-    st.markdown(f'### :material/school: Lincoln Elementary — {LATEST-1}-{str(LATEST)[2:]}')
-    c1, c2, c3 = st.columns(3)
-    c1.metric(
-        ':material/payments: Total per-pupil spending',
-        f"${lincoln_now['total_ppe']:,.0f}",
-        delta=f"${lincoln_now['total_ppe'] - med:+,.0f} vs peer median",
-        border=True,
-        chart_data=ppe_spark,
-        chart_type='line',
-        help=f"Other Burlingame elementaries' median is ${med:,.0f}. "
-             f"Sparkline = Lincoln's per-pupil spending over time.",
-    )
-    c2.metric(
-        ':material/leaderboard: Rank among peers',
-        f"{_ordinal(rank)} of {n}",
-        border=True,
-        help='1st = highest per-pupil spending among the Burlingame elementaries.',
-    )
-    c3.metric(
-        ':material/account_balance: Federally funded share',
-        f"{fed_share:.1f}%",
-        border=True,
-        help='Share of per-pupil spending from federal sources (Title I, etc.). '
-             'Higher-poverty schools typically draw more.',
-    )
+    with st.container(border=True):
+        st.markdown(f'### :material/school: Lincoln Elementary — {LATEST-1}-{str(LATEST)[2:]}')
+        c1, c2, c3 = st.columns(3)
+        c1.metric(
+            ':material/payments: Total per-pupil spending',
+            f"${lincoln_now['total_ppe']:,.0f}",
+            delta=f"${lincoln_now['total_ppe'] - med:+,.0f} vs peer median",
+            delta_color='off',
+            help=f"Other Burlingame elementaries' median is ${med:,.0f}. Higher or lower "
+                 f"spending is not inherently better — it largely tracks student need.",
+        )
+        c2.metric(
+            ':material/leaderboard: Rank among peers',
+            f"{_ordinal(rank)} of {n}",
+            help='1st = highest per-pupil spending among the Burlingame elementaries.',
+        )
+        c3.metric(
+            ':material/account_balance: Federally funded share',
+            f"{fed_share:.1f}%",
+            help='Share of per-pupil spending from federal sources (Title I, etc.). '
+                 'Higher-poverty schools typically draw more.',
+        )
 
 st.html('<div style="height:10px"></div>')
 
