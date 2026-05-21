@@ -109,7 +109,7 @@ with tab_funding:
     st.markdown('#### :material/payments: Does more money improve outcomes?')
     st.markdown(
         '- **On average, yes** — the modern causal evidence settled the old debate. Jackson & '
-        'Mackevicius (2024): a sustained **+$1,000/pupil over 4 years ≈ +0.035 SD** test scores, '
+        'Mackevicius (2024): a sustained **+\\$1,000/pupil over 4 years ≈ +0.035 SD** test scores, '
         '+1.9pp graduation, +2.7pp college-going.\n'
         '- **But the effect is concentrated in low-income, low-spending districts.** At an affluent, '
         'high-achieving, already-strong school like Lincoln, diminishing returns are real — this is '
@@ -141,7 +141,7 @@ with tab_funding:
         '(+50%, only above 55% high-need) grants go to low-income/EL/foster students. Burlingame '
         'gets little supplemental and **zero concentration** money — hence below-average spending.\n'
         '- **PTA vs. foundation:** parent fundraising at affluent schools widens between-school '
-        'inequality. **But Burlingame\'s BCE foundation already pools ~$2.8-3.0M across all 7 schools** '
+        'inequality. **But Burlingame\'s BCE foundation already pools ~\\$2.8-3.0M across all 7 schools** '
         '(funding ~20 arts/music/wellness/intervention teachers). A dollar to **BCE is shared '
         'district-wide**; a dollar to the **Lincoln PTA stays at Lincoln**.'
     )
@@ -149,7 +149,7 @@ with tab_funding:
     st.markdown('#### :material/bolt: A decision framework, ranked by leverage')
     st.markdown(
         '1. **Don\'t over-index on the spending gap** — below-average spending coexists with top '
-        'outcomes; "catching up to $19,450" is not an evidence-based goal here.\n'
+        'outcomes; "catching up to \\$19,450" is not an evidence-based goal here.\n'
         '2. **Give to BCE over the PTA** — same dollar, pooled equitably district-wide, and funds the '
         'categories closest to what works (intervention/support).\n'
         '3. **Champion high-dosage tutoring** — best impact-per-dollar, ideally where need is highest.\n'

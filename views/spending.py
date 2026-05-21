@@ -128,9 +128,9 @@ with tab_compare:
         hi = plot.iloc[0]
         lo = plot.iloc[-1]
         st.markdown(
-            f'- **Blue = Lincoln.** Spending ranges from **${lo["total_ppe"]:,.0f}** ({lo["School"]}) '
-            f'to **${hi["total_ppe"]:,.0f}** ({hi["School"]}) per pupil.\n'
-            f'- **Red dashed line = CA average for elementary (K-6) schools (~${CA_AVG_PPE:,}, '
+            f'- **Blue = Lincoln.** Spending ranges from **\\${lo["total_ppe"]:,.0f}** ({lo["School"]}) '
+            f'to **\\${hi["total_ppe"]:,.0f}** ({hi["School"]}) per pupil.\n'
+            f'- **Red dashed line = CA average for elementary (K-6) schools (~\\${CA_AVG_PPE:,}, '
             f'2023-24).** Every Burlingame elementary spends *below* it — because California routes '
             f'extra money (LCFF supplemental/concentration + federal Title I) to higher-poverty '
             f'students, and Burlingame is low-poverty. (This is an elementary-only benchmark, so '
@@ -179,7 +179,7 @@ with tab_composition:
         cen = latest.iloc[0]
         st.markdown(
             f'- **Central allocation (gray + orange) is identical across all schools** '
-            f'(~${cen["central_state_local"] + cen["central_federal"]:,.0f}/pupil) — it is the '
+            f'(~\\${cen["central_state_local"] + cen["central_federal"]:,.0f}/pupil) — it is the '
             f'district-wide share. All school-to-school variation lives in the *School* bars.\n'
             f'- The **School · Federal** slice is the clearest poverty signal: it concentrates at '
             f'the Title I schools and is near zero elsewhere.'
@@ -231,8 +231,8 @@ with tab_trend:
             first, last_r = lin.iloc[0], lin.iloc[-1]
             pct = 100 * (last_r['total_ppe'] - first['total_ppe']) / first['total_ppe']
             st.markdown(
-                f"- **Lincoln (blue):** ${first['total_ppe']:,.0f} in {int(first['school_year_end'])} → "
-                f"${last_r['total_ppe']:,.0f} in {int(last_r['school_year_end'])} "
+                f"- **Lincoln (blue):** \\${first['total_ppe']:,.0f} in {int(first['school_year_end'])} → "
+                f"\\${last_r['total_ppe']:,.0f} in {int(last_r['school_year_end'])} "
                 f"(+{pct:.0f}% nominal, not inflation-adjusted).\n"
                 f"- The 2020-2022 bump across schools largely reflects one-time federal COVID relief "
                 f"(ESSER) flowing through per-pupil figures."

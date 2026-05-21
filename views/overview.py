@@ -269,7 +269,7 @@ if not staff.empty and not absent.empty and not spend.empty:
         b3.metric(
             ':material/payments: Per-pupil spending',
             f'${lin_ppe:,.0f}',
-            help=f'CA elementary average is ${CA_PPE_ELEM:,}; Lincoln is '
+            help=f'CA elementary average is \\${CA_PPE_ELEM:,}; Lincoln is '
                  f'{ordinal(ppe_rank)}-highest of {n_elem} locally. Spending largely tracks '
                  f'student need (low-poverty districts draw less LCFF/Title I), so higher or '
                  f'lower is not inherently better.',
