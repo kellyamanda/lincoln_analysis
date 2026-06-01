@@ -51,7 +51,12 @@ def register_brand_theme():
 
 
 def configure(chart):
-    return chart.configure_axis(labelFontSize=11, titleFontSize=12).configure_title(fontSize=13)
+    # configure_axisX(labelAngle=0) forces horizontal x-axis tick labels app-wide —
+    # never let Vega auto-rotate them (rotated labels are hard to read).
+    return (chart
+            .configure_axis(labelFontSize=11, titleFontSize=12)
+            .configure_axisX(labelAngle=0)
+            .configure_title(fontSize=13))
 
 
 PAGE_CSS = """
